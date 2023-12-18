@@ -15,7 +15,7 @@ class UserInfo(models.Model):
 """
 class Blog(models.Model):
     category_list = ((1,"云计算"),(2,"Python全栈"),(3,"Go开发"))
-    category = models.CharField(verbose_name='分类',choices=category_list,max_length=32)
+    category = models.SmallIntegerField(verbose_name='分类',choices=category_list)
 
     image = models.CharField(verbose_name='封面',max_length=255)
     title = models.CharField(verbose_name='标题',max_length=32)

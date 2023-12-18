@@ -16,8 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from blog.views import test
+from blog.views import blogview, account,commmentview
+
 urlpatterns = [
-    # path('admin/', admin.site.urls),
-    path('api/blog/', test.BlogView.as_view(),name='test'),
+    ###博客列表与详情###
+    path('api/blog/', blogview.BlogView.as_view(), name='blog'),
+    path('api/blog/<int:pk>', blogview.BlogViewdetail.as_view(), name='blogdetail'),
+    ###登陆与注册路由###
+    path('api/register/', account.RegisterView.as_view(), name='register'),
+    path('api/login/', account.LoginView.as_view(), name='login'),
+    ###评论列表与添加###
+    path('api/comment/<int:blog_id>', commmentview.CommentView.as_view(), name='comment'),
 ]
