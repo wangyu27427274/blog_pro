@@ -3,20 +3,21 @@ from rest_framework.response import Response
 from rest_framework import serializers
 from blog import models
 from blog.ext.hook import MyHook
-from blog.ext.auth import URLComAuth
-
+from blog.ext.auth import URLAuth
+from datetime import datetime
+from django.db.models import F
 """评论序列化类"""
 
 
 class CommentSerializer(MyHook, serializers.ModelSerializer):
-
     class Meta:
         model = models.Comment
-        fields = ['id','user', 'blog', 'content']
+        fields = "__all__"
         extra_kwargs = {
             'user': {'read_only': True},
             'id': {'read_only': True},
             'blog': {'read_only': True},
+            'create_datetime': {'read_only': True},
         }
 
     def Myhook_user(self, obj):
@@ -25,13 +26,15 @@ class CommentSerializer(MyHook, serializers.ModelSerializer):
     def Myhook_blog(self, obj):
         return obj.blog.title
 
+    def  Myhook_create_datetime(self, obj):
+        return obj.create_datetime.strftime("%Y-%m-%d:%H:%M:%S")
 
 """评论列表"""
 
 
 class CommentView(APIView):
     #对登录用户进行验证
-    authentication_classes = [URLComAuth,]
+    authentication_classes = [URLAuth,]
 
     """获取评论列表(无需验证)"""
     def get(self, request, *args, **kwargs):
@@ -56,7 +59,9 @@ class CommentView(APIView):
         if not ser.is_valid():
             return Response({"status": 10087, "error": "校验失败", "detail": ser.errors})
 
-        ser.save(blog=blog_object, user=request.user)
+        ser.save(blog=blog_object, user=request.user,create_datetime=datetime.now())
+        # 点赞成功后,博客点赞统计数加1
+        models.Blog.objects.filter(id=blog_id).update(comment_count=F('comment_count') + 1)
         return Response({"status": 10086, "sucess": "评论成功", "detail": ser.data})
 
 

@@ -1,8 +1,8 @@
 from rest_framework.authentication import BaseAuthentication
 from blog import models
+from rest_framework import exceptions
 
-
-class URLComAuth(BaseAuthentication):
+class URLAuth(BaseAuthentication):
     def authenticate(self, request):
 
         token = request.query_params.get('token')
@@ -15,6 +15,16 @@ class URLComAuth(BaseAuthentication):
         if not instance:
             return
         return instance, token
+
+    def authenticate_header(self, request):
+
+        return "API"
+
+
+class NoAuth(BaseAuthentication):
+    def authenticate(self, request):
+
+        raise exceptions.AuthenticationFailed({"status":10087,"message":"请登录"})
 
     def authenticate_header(self, request):
 

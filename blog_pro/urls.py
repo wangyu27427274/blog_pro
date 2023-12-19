@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from blog.views import blogview, account,commmentview
+from blog.views import blogview, account, commmentview,favorview
 
 urlpatterns = [
     ###博客列表与详情###
@@ -27,4 +27,6 @@ urlpatterns = [
     path('api/login/', account.LoginView.as_view(), name='login'),
     ###评论列表与添加###
     path('api/comment/<int:blog_id>', commmentview.CommentView.as_view(), name='comment'),
+    ###点赞###
+    path('api/favor/<int:blog_id>', favorview.FavorView.as_view(), name='favor'),
 ]
